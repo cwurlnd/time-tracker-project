@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>List all timers</title>
+        {% load static %}
+        <link href="{% static 'css/bootstrap.min.css' %}" >  
+        <script src="{% static 'bootstrap.min.js' %}"></script> 
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> 
+        <style>
+            body {
+                background: #202020;
+                color: white;
+            }
+            #stopwatch {
+                font-size: 100px;
+                position: absolute;
+                top: 45%;
+                left: 50%;
+                transform: translate(-50%, -55%);
+            }
+            li {
+              padding: 10px;
+            }
+            h1, h3, h5, li, input {
+              font-family: Garamond;
+              margin-left: 40px;
+            }
+            #create_timer {
+              margin-left: 50px;
+              font-family: Garamond;
+            }
+            h1 {
+              margin-top: 20px;
+            }
+            #buttons {
+                position: absolute;
+                top: 55%;
+                left: 48.4%;
+                transform: translate(-51.6%, -45%);
+            }
+            #buttons li {
+                display: inline;
+                padding-left: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class = "nav-item">
+                  <button class = "nav-link" onclick="dayAndWeekTask()">Task Management Dashboard</button>
+                </li>
+                <li class = "nav-item">
+                  <button class = "nav-link" onclick="dayAndWeek()">Time Management Dashboard</button>
+                </li>
+                <li class = "nav-item">
+                  <button class = "nav-link" onclick="goTimerList()">Create/View Timers</button>
+                </li>
+                <li class = "nav-item">
+                  <button class = "nav-link" onclick="goHome()">Create/View Tasks</button>
+                </li> 
+              </ul>
+            </div>
+          </nav>
+
+    <h1>Timer List</h1>
+    <a id="create_timer"  class="btn btn-success" role="button" href="/timer_create"> Create New Timer </a>
+    {% if timer_list %}
+        <ol>
+        {% for timer in timer_list %}
+            <li>
+                <a href="/{{ timer.id }}/timer/update">
+                   {{ timer.task.name}}: 
+                </a>
+                {{ timer.start }}
+                -----
+                <a href="/{{ timer.id }}/timer/delete" class="btn btn-primary" role="button">
+                    Delete
+                </a>
+            </li>
+        {% endfor %}
+        </ol>
+    {% else %}
+        <p>No timers to show</p>
+    {% endif %}
+    
+    <script>
+
+        function dayAndWeek() {
+              d = new Date()
+              d.setHours(0,0,0,0)
+              d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+              var week1 = new Date(d.getFullYear(), 0, 4);
+              var week = 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+              var m = new Date()
+              curr = 'http://127.0.0.1:8000/time_dash/' + week.toString() + '/' + (m.getMonth() + 1).toString()
+              document.URL = curr
+              window.location = curr
+            }
+
+            function dayAndWeekTask() {
+                d = new Date()
+                d.setHours(0,0,0,0)
+                d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+                var week1 = new Date(d.getFullYear(), 0, 4);
+                var week = 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+                var m = new Date()
+                curr = 'http://127.0.0.1:8000/task_dash/' + week.toString() + '/' + (m.getMonth() + 1).toString()
+                document.URL = curr
+                window.location = curr
+              }
+      </script>
+      <script>
+        function goHome() {
+          window.location = "http://127.0.0.1:8000/"
+        }
+        function goTimerList() {
+          window.location = "http://127.0.0.1:8000/timer_list"
+        }
+      </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </body>
+</html>

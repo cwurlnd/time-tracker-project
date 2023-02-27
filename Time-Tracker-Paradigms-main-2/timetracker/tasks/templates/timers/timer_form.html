@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Create Timer View</title>
+        {% load static %}
+        <link href="{% static 'css/bootstrap.min.css' %}" >  
+        <script src="{% static 'bootstrap.min.js' %}"></script> 
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> 
+        <style>
+            body {
+                background: #202020;
+                color: white;
+            }
+            li {
+              padding: 10px;
+            }
+            h1, h3, h5, li, input, form {
+              font-family: Garamond;
+              margin-left: 40px;
+            }
+            h1 {
+              margin-top: 20px;
+            }
+            #stopwatch {
+                font-size: 100px;
+                position: absolute;
+                top: 45%;
+                left: 50%;
+                transform: translate(-50%, -55%);
+            }
+            #buttons {
+                position: absolute;
+                top: 55%;
+                left: 48.4%;
+                transform: translate(-51.6%, -45%);
+            }
+            #buttons li {
+                display: inline;
+                padding-left: 10px;
+            }
+        </style>
+    </head>
+    <body>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class = "nav-item">
+              <button class = "nav-link" onclick="dayAndWeekTask()">Task Management Dashboard</button>
+            </li>
+            <li class = "nav-item">
+              <button class = "nav-link" onClick = "dayAndWeek()">Time Management Dashboard</button>
+            </li>
+            <li class = "nav-item">
+              <button class = "nav-link" onclick="goTimerList()">Create/View Timers</button>
+            </li>
+            <li class = "nav-item">
+              <button class = "nav-link" onclick="goHome()">Create/View Tasks</button>
+            </li> 
+          </ul>
+        </div>
+      </nav>  
+
+          
+
+        <h1>Timer</h1>
+
+
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+          {{ startTime }}
+          {{ endTime }}
+          <button type="submit" onclick = "" class="btn btn-primary">Save</button>
+      </form>
+      
+        <div id="stopwatch">
+            00:00:00
+        </div>
+
+        <ul id="buttons">
+            <li><button onclick="startTimer()">Start</button></li>
+            <li><button onclick="stopTimer()">Stop</button></li>
+
+            {% comment %} <li><button onclick="resetTimer()">Reset</button></li> {% endcomment %}
+        </ul>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        
+    </body>
+
+    <script>
+      function dayAndWeek() {
+            d = new Date()
+            d.setHours(0,0,0,0)
+            d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+            var week1 = new Date(d.getFullYear(), 0, 4);
+            var week = 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+            var m = new Date()
+            curr = 'http://127.0.0.1:8000/time_dash/' + week.toString() + '/' + (m.getMonth() + 1).toString()
+            document.URL = curr
+            window.location = curr
+          }
+
+          function dayAndWeekTask() {
+                d = new Date()
+                d.setHours(0,0,0,0)
+                d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+                var week1 = new Date(d.getFullYear(), 0, 4);
+                var week = 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+                var m = new Date()
+                curr = 'http://127.0.0.1:8000/task_dash/' + week.toString() + '/' + (m.getMonth() + 1).toString()
+                document.URL = curr
+                window.location = curr
+              }
+
+    </script>
+    <script>
+      function goHome() {
+        window.location = "http://127.0.0.1:8000/"
+      }
+      function goTimerList() {
+        window.location = "http://127.0.0.1:8000/timer_list"
+      }
+    </script>
+
+    <script>
+        const timer = document.getElementById('stopwatch');
+
+        var hr = 0; 
+        var min = 0;
+        var sec = 0;
+        var stoptime = true;
+
+        var startTime = 0;
+        var endTime = 0;
+        
+        function startTimer() {
+          if (stoptime == true) {
+                stoptime = false;
+                startTime = new Date()
+                timerCycle();
+            }
+        }
+        function stopTimer() {
+          if (stoptime == false) {
+            stoptime = true;
+            endTime = new Date()
+
+            var taskTime = new Date(startTime - endTime)
+
+            
+            var startDay = startTime.getFullYear() + '-' + ('00' + (parseInt(startTime.getMonth()) + 1).toString()).slice(-2) + '-' + ('00' + startTime.getDate()).slice(-2)
+            var startDetails = ('00' + startTime.getHours()).slice(-2) + ':' + ('00' + startTime.getMinutes()).slice(-2) + ':' + ('00' + startTime.getSeconds()).slice(-2)
+            
+            var start = startDay + ' ' + startDetails
+
+            
+            var endDay = endTime.getFullYear() + '-' + ('00' + (parseInt(endTime.getMonth()) + 1).toString()).slice(-2) + '-' + ('00' + endTime.getDate()).slice(-2)
+            var endDetails = ('00' + endTime.getHours()).slice(-2) + ':' + ('00' + endTime.getMinutes()).slice(-2) + ':' + ('00' + endTime.getSeconds()).slice(-2)
+
+            var end = endDay + ' ' + endDetails
+            
+            document.getElementById("id_start").value = start
+            document.getElementById("id_end").value = end
+          }
+
+          timer.innerHTML = "00:00:00";
+            stoptime = true;
+            hr = 0;
+            sec = 0;
+            min = 0;
+        }
+        
+        function timerCycle() {
+            if (stoptime == false) {
+            sec = parseInt(sec);
+            min = parseInt(min);
+            hr = parseInt(hr);
+        
+            sec = sec + 1;
+        
+            if (sec == 60) {
+              min = min + 1;
+              sec = 0;
+            }
+            if (min == 60) {
+              hr = hr + 1;
+              min = 0;
+              sec = 0;
+            }
+        
+            if (sec < 10 || sec == 0) {
+              sec = '0' + sec;
+            }
+            if (min < 10 || min == 0) {
+              min = '0' + min;
+            }
+            if (hr < 10 || hr == 0) {
+              hr = '0' + hr;
+            }
+        
+            timer.innerHTML = hr + ':' + min + ':' + sec;
+        
+            setTimeout("timerCycle()", 1000);
+          }
+        }
+        
+        function resetTimer() {
+            timer.innerHTML = "00:00:00";
+            stoptime = true;
+            hr = 0;
+            sec = 0;
+            min = 0;
+        }
+
+    </script>
+</html>
