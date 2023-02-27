@@ -1,7 +1,7 @@
 # time-tracker-project
 
 This is a time tracker management project that I worked on in the Fall 2021 semester. 
-The website is built using Python, HTML, Django, and Bootstrap. 
+The website is built using Python, HTML, Django, SQLite and Bootstrap. 
 It allows users to create tasks and track how much time they spent on that task.
 Additionally, there is a dashboard which enables users to look at data revolving around the tasks they have done.
 
